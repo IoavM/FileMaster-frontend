@@ -80,11 +80,21 @@ const GeneradorQR = () => {
     }
   };
 
-  const descargarQR = () => {
-    const link = document.createElement('a');
-    link.href = urlQR;
-    link.download = 'codigo-qr.png';
-    link.click();
+  const descargarQR = async () => {
+    try {
+      const response = await fetch(urlQR);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'codigo-qr.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error al descargar el QR:', error);
+    }
   };
 
   return (
