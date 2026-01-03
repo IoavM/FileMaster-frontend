@@ -356,8 +356,7 @@ const ConvertidorArchivos = () => {
   const categorias = [
     { id: 'imagenes', nombre: 'Imágenes', icon: Image },
     { id: 'documentos', nombre: 'Documentos', icon: FileText },
-    { id: 'hojas', nombre: 'Hojas de Cálculo', icon: Table },
-    { id: 'audio', nombre: 'Audio', icon: Music }
+    { id: 'hojas', nombre: 'Hojas de Cálculo', icon: Table }
   ];
 
   return (
@@ -386,7 +385,6 @@ const ConvertidorArchivos = () => {
       {categoria === 'imagenes' && <ConvertidorImagenes />}
       {categoria === 'documentos' && <ConvertidorDocumentos />}
       {categoria === 'hojas' && <ConvertidorHojas />}
-      {categoria === 'audio' && <ConvertidorAudio />}
     </div>
   );
 };
@@ -788,118 +786,7 @@ const ConvertidorHojas = () => {
   );
 };
 
-const ConvertidorAudio = () => {
-  const [tipoConversion, setTipoConversion] = useState('mp4-to-mp3');
-  const [archivo, setArchivo] = useState(null);
-  const [procesando, setProcesando] = useState(false);
-  const [mensaje, setMensaje] = useState('');
-  const inputRef = useRef(null);
 
-  const tiposConversion = [
-    { id: 'mp4-to-mp3', nombre: 'MP4 a MP3', accept: '.mp4', formatoSalida: 'mp3' },
-    { id: 'mp3-to-wav', nombre: 'MP3 a WAV', accept: '.mp3', formatoSalida: 'wav' },
-    { id: 'wav-to-mp3', nombre: 'WAV a MP3', accept: '.wav', formatoSalida: 'mp3' }
-  ];
-
-  const manejarArchivo = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setArchivo(file);
-      setMensaje('');
-    }
-  };
-
-  const convertirAudio = async () => {
-    if (!archivo) return;
-
-    setProcesando(true);
-    setMensaje('Convirtiendo audio...');
-
-    const tipoActual = tiposConversion.find(t => t.id === tipoConversion);
-    const formData = new FormData();
-    formData.append('file', archivo);
-    formData.append('format', tipoActual.formatoSalida);
-
-    try {
-      const response = await fetch(`${API_URL}/api/audio/convert`, {
-        method: 'POST',
-        body: formData
-      });
-
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `audio_convertido.${tipoActual.formatoSalida}`;
-        link.click();
-        window.URL.revokeObjectURL(url);
-        setMensaje('¡Audio convertido exitosamente!');
-      } else {
-        setMensaje('Error al convertir el audio');
-      }
-    } catch (error) {
-      setMensaje('Error de conexión con el servidor');
-      console.error(error);
-    } finally {
-      setProcesando(false);
-    }
-  };
-
-  const tipoActual = tiposConversion.find(t => t.id === tipoConversion);
-
-  return (
-    <div className="convertidor-seccion">
-      <div className="grupo-input">
-        <label className="etiqueta">Tipo de conversión</label>
-        <select
-          value={tipoConversion}
-          onChange={(e) => {
-            setTipoConversion(e.target.value);
-            setArchivo(null);
-            setMensaje('');
-          }}
-          className="input-select"
-        >
-          {tiposConversion.map(tipo => (
-            <option key={tipo.id} value={tipo.id}>{tipo.nombre}</option>
-          ))}
-        </select>
-      </div>
-
-      <div className="zona-subida-pequena" onClick={() => inputRef.current?.click()}>
-        <input
-          ref={inputRef}
-          type="file"
-          accept={tipoActual.accept}
-          onChange={manejarArchivo}
-          className="input-oculto"
-        />
-        <Music size={48} className="icono-subida" />
-        <p className="texto-subida-pequeno">
-          {archivo ? archivo.name : `Cargar archivo ${tipoActual.accept}`}
-        </p>
-      </div>
-
-      {mensaje && (
-        <div className="info-caja">
-          <p>{mensaje}</p>
-        </div>
-      )}
-
-      {archivo && (
-        <button
-          onClick={convertirAudio}
-          disabled={procesando}
-          className="boton-primario"
-        >
-          <RefreshCw size={20} />
-          <span>{procesando ? 'Convirtiendo...' : 'Convertir Audio'}</span>
-        </button>
-      )}
-    </div>
-  );
-};
 
 const CompresorImagen = () => {
   const [archivo, setArchivo] = useState(null);
