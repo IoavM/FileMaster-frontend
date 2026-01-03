@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Scissors, Mic, RefreshCw, QrCode, FileText, Music, Table, Download, Upload, Play, Pause, Moon, Sun, Image } from 'lucide-react';
 import './App.css';
 
-const API_URL = 'http://localhost:8000';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('qr');
