@@ -1038,7 +1038,8 @@ const DescargadorVideo = () => {
         window.URL.revokeObjectURL(downloadUrl);
         setMensaje(`¡${formato === 'mp4' ? 'Video' : 'Audio'} descargado exitosamente!`);
       } else {
-        setMensaje('Error al descargar el video');
+        const errorData = await response.json();
+        setMensaje(`Error: ${errorData.error || 'Error al descargar el video'}`);
       }
     } catch (error) {
       setMensaje('Error de conexión con el servidor');
